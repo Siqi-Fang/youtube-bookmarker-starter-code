@@ -1,10 +1,24 @@
 <link href="popup.css" rel="stylesheet" type="text/css" />
 <script type="module" src="popup.js"></script>
 
-<div class="container">
+
+<header class="popup-header">
+  <div class="row"> <img src="assets/ext-icon.png" class="logo-icon">
+  <img src="assets/icon-text.png" style="height: 35px; width:85px">
+  </div>
+  <hr>
+</header>
+
+
+<div class="container" contenteditable="ture">
   <div>
-    <div class="title">Your bookmarks for this video</div>
+    <div class="title">Your notes for this tutorial</div>
 
     <div class="bookmarks" id="bookmarks"></div>
+
+
   </div>
+  <span id="editable" contenteditable="true">
+      custom notes here
+    </span>
 </div>

@@ -1,13 +1,13 @@
 {
-    "name": "My YT Bookmarks",
+    "name": "Tele Tube",
     "version": "0.1.0",
-    "description": "Saving timestamps in YT videos",
-    "permissions": ["storage", "tabs"],
-    "host_permissions": ["https://*.youtube.com/*"],
+    "description": "Take AI-Powered Notes",
+    "permissions": ["storage", "tabs"], // these are two chrome apis, store stuff & identify browser tab
+    "host_permissions": ["https://*.youtube.com/*"], // need to add to this if we add more platforms
     "background": {
-      "service_worker": "background.js"
+      "service_worker": "background.js" // when reloading the extension, chrome will scan this file
     },
-    "content_scripts": [
+    "content_scripts": [ // manipulate the DOM of the page we are on
       {
         "matches": ["https://*.youtube.com/*"],
         "js": ["contentScript.js"]
@@ -19,19 +19,21 @@
           "assets/bookmark.png",
           "assets/play.png",
           "assets/delete.png",
-          "assets/save.png"
+          "assets/save.png",
+          "assets/ext-icon-sm.png",
+           "assets/icon-text.png"
         ],
         "matches": ["https://*.youtube.com/*"]
       }
     ],
     "action": {
       "default_icon": {
-        "16": "assets/ext-icon.png",
+        "16": "assets/ext-icon.png", // these are icons shown on the tool bar
         "24": "assets/ext-icon.png",
         "32": "assets/ext-icon.png"
       },
-      "default_title": "My YT Bookmarks",
-      "default_popup": "popup.html"
+      "default_title": "Tube Summed",
+      "default_popup": "popup.html"  // the UI
     },
     "manifest_version": 3
 }

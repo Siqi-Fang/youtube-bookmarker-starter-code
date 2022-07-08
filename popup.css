@@ -1,10 +1,10 @@
 .container {
   width: 280px;
-  color: #314d3e;
+  color: #000000;
 }
 
 .title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: bold;
   padding: 8px;
 }
@@ -51,4 +51,15 @@
 .bookmark-controls {
   flex: auto;
   text-align: right;
+}
+
+.logo-icon{
+  width: 30px;
+  height: 35px;
+  display: inline;
+  margin-right:5px;
+}
+
+.popup-header{
+
 }
