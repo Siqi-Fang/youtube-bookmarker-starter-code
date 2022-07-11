@@ -21,7 +21,8 @@
           "assets/delete.png",
           "assets/save.png",
           "assets/ext-icon-sm.png",
-           "assets/icon-text.png"
+          "assets/icon-text.png",
+          "assets/lightbulb.png"
         ],
         "matches": ["https://*.youtube.com/*"]
       }
