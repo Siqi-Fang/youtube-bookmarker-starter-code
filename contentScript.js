@@ -4,12 +4,12 @@
     let currentVideoBookmarks = [];
 
     const fetchBookmarks = () => {
-    return new Promise((resolve) => {
-      chrome.storage.sync.get([currentVideo], (obj) => {
-        resolve(obj[currentVideo] ? JSON.parse(obj[currentVideo]) : []);
-      });
-    });
-  };
+        return new Promise((resolve) => {
+        chrome.storage.sync.get([currentVideo], (obj) => {
+            resolve(obj[currentVideo] ? JSON.parse(obj[currentVideo]) : []);
+        });
+        });
+    };
     // when the background.js sends a message
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
         const { type, value, videoId } = obj;
@@ -22,9 +22,10 @@
         } else if ( type === "DELETE") {
             currentVideoBookmarks = currentVideoBookmarks.filter((b) => b.time != value);
             chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) });
-
             response(currentVideoBookmarks);
-    }
+        } else if ( type === "GENERATE") {
+            // TBD
+        }
     });
 
 
@@ -35,25 +36,38 @@
         currentVideoBookmarks = await fetchBookmarks();
         // Sanity check
         if (!bookmarkBtnExists) {
+            /* Bookmark Button */ 
             const bookmarkBtn = document.createElement("img");
             // img we click on for bookmark button
             bookmarkBtn.src = chrome.runtime.getURL("assets/bookmark.png");
             bookmarkBtn.className = "ytp-button " + "bookmark-btn";
             bookmarkBtn.title = "Click to bookmark current timestamp";
 
+            /* Generate Button */
+            const generateBtn = document.createElement("img");
+            generateBtn.src = chrome.runtime.getURL("assets/lightbulb.png");
+            generateBtn.className = "ytp-button " + "bookmark-btn";
+            generateBtn.title = "Click to generate time-stamped summary";
+            
             // grabs ytb leftcontrol & ytb player
             youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
             youtubePlayer = document.getElementsByClassName("video-stream")[0];
+
             // add tge bookmarkBtn to the control
             youtubeLeftControls.appendChild(bookmarkBtn);
             bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
+            youtubeLeftControls.appendChild(generateBtn);
+            generateBtn.addEventListener("click", addNewBookmarkEventHandler);
         }
     };
+
+    // Simple workaround with the button issue
+    //newVideoLoaded();
 
     // on bookmark btn click event
     const addNewBookmarkEventHandler = async () => {
         const currentTime = youtubePlayer.currentTime; // grabs timestamp
-        console.log(currentTime);
+        // console.log(currentTime);
         const newBookmark = {
             time: currentTime,
             desc: "Note at " + getTime(currentTime), // this is where we generate the note

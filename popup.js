@@ -62,6 +62,19 @@ const onDelete = async e => {
         value: bookmarkTime
     })
 };
+// when generate
+const onGenerate= async e => {
+    const activeTab = await getCurrentTab();
+    const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+    const bookmarkElementToDel = document.getElementById("bookmark-" + bookmarkTime);
+
+    bookmarkElementToDel.parentNode.removeChild(bookmarkElementToDel);
+
+    chrome.tabs.sendMessage(activeTab.id, {
+        type: "GENERATE",
+        value: bookmarkTime
+    })
+};
 
 const editNoteEvents =  (src, eventListener, controlParentElement) => {
     // src = play/ edit/ del
