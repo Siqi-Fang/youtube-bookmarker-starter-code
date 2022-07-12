@@ -1,4 +1,5 @@
 import { getCurrentTab } from "./utils.js";
+
 // adding a new bookmark row to the popup
 const addNewBookmark = (bookmarksElement, bm) => {
     const bmTitleElement = document.createElement("div");
@@ -97,16 +98,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     const urlParameters = new URLSearchParams(queryParameters);
     const currentVideo = urlParameters.get('v');
 
+    // todo: use currentVideo(videoID) to get captions
+
     // we are actually watching video
     if (activeTab.url.includes("youtube.com/watch") && currentVideo){
-        chrome.storage.sync.get([currentVideo], (data) => { //NOTE:  this is ternary operator in js
+        // chrome.storage.sync.set in contentScript.js
+        chrome.storage.sync.get([currentVideo], (data) => {
             const currentVideoBookmarks = data[currentVideo] ? JSON.parse(data[currentVideo]):[];
-
             viewBookmarks(currentVideoBookmarks);
         });
     } else { // otherwise show message
         const container = document.getElementsByClassName("container")[0];
-
         container.innerHTML = '<div class="title">Not on a youtube video page.</div>';
     }
 });

@@ -27,6 +27,14 @@
         });// ^ stuff needs to be stored in JSON in chrome storage
     };
 
+    // on bookmark btn click event
+    const generateSummaryEventHandler = async () => {
+        // // store a new bookmark sorted by time
+        // chrome.storage.sync.set({
+        //     [currentVideo]: JSON.stringify([...currentVideoBookmarks, newBookmark].sort((a, b) => a.time - b.time))
+        // });// ^ stuff needs to be stored in JSON in chrome storage
+    };
+
     // on NEW video event
     const newVideoLoaded = async() => {
         const bookmarkBtnExists = document.getElementsByClassName("bookmark-btn")[0];
@@ -55,7 +63,7 @@
             youtubeLeftControls.appendChild(bookmarkBtn);
             bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
             youtubeLeftControls.appendChild(generateBtn);
-            generateBtn.addEventListener("click", addNewBookmarkEventHandler);
+            generateBtn.addEventListener("click", generateSummaryEventHandler);
         }
     };
 
@@ -73,7 +81,8 @@
             chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) });
             response(currentVideoBookmarks);
         } else if ( type === "GENERATE") {
-            // TBD
+            chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) });
+            response(currentVideoBookmarks);
         }
 
     });
