@@ -1,4 +1,9 @@
 import { getCurrentTab } from "./utils.js";
+import {
+    YoutubeCaptions, 
+    getSubtitles, 
+    getSubtitlesContent 
+    } from 'youtube-captions-scraper';
 
 // adding a new bookmark row to the popup
 const addNewBookmark = (bookmarksElement, bm) => {
@@ -25,6 +30,7 @@ const addNewBookmark = (bookmarksElement, bm) => {
 };
 
 const viewBookmarks = (currentBookmarks = []) => {
+
     const bookmarksElement = document.getElementById("bookmarks");
     bookmarksElement.innerHTML = "";
 
@@ -44,6 +50,10 @@ const viewBookmarks = (currentBookmarks = []) => {
 const onPlay = async e => {
     const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
     const activeTab = await getCurrentTab(); // grabs tab
+            
+    //Get full transcription as one string
+    const subtitles = await getSubtitlesContent({ videoID: "P-ygmGxuiEI" });
+    console.log(subtitles);
 
     chrome.tabs.sendMessage(activeTab.id, {
         type: "PLAY",
@@ -61,7 +71,7 @@ const onDelete = async e => {
     chrome.tabs.sendMessage(activeTab.id, {
         type: "DELETE",
         value: bookmarkTime
-    })
+    }, viewBookmarks);
 };
 // when generate
 const onGenerate= async e => {
