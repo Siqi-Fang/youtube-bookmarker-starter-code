@@ -5,29 +5,27 @@
 
     const fetchBookmarks = () => {
         return new Promise((resolve) => {
-        chrome.storage.sync.get([currentVideo], (obj) => {
-            resolve(obj[currentVideo] ? JSON.parse(obj[currentVideo]) : []);
-        });
+            chrome.storage.sync.get([currentVideo], (obj) => {
+                resolve(obj[currentVideo] ? JSON.parse(obj[currentVideo]) : []);
+            });
         });
     };
-    // when the background.js sends a message
-    chrome.runtime.onMessage.addListener((obj, sender, response) => {
-        const { type, value, videoId } = obj;
-        // these ^^^^ are all chrome features
-        if (type === "NEW") { // when new video loaded
-            currentVideo = videoId;
-            newVideoLoaded(); // handle actions with new video
-        } else if (type === "PLAY"){
-            youtubePlayer.currentTime = value; // this is where we jump to timestamp
-        } else if ( type === "DELETE") {
-            currentVideoBookmarks = currentVideoBookmarks.filter((b) => b.time != value);
-            chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) });
-            response(currentVideoBookmarks);
-        } else if ( type === "GENERATE") {
-            // TBD
-        }
-    });
+    
+    // on bookmark btn click event
+    const addNewBookmarkEventHandler = async () => {
+        const currentTime = youtubePlayer.currentTime; // grabs timestamp
+        // console.log(currentTime);
+        const newBookmark = {
+            time: currentTime,
+            desc: "Note at " + getTime(currentTime), // this is where we generate the note
+        };
 
+        currentVideoBookmarks = await fetchBookmarks();
+        // store a new bookmark sorted by time
+        chrome.storage.sync.set({
+            [currentVideo]: JSON.stringify([...currentVideoBookmarks, newBookmark].sort((a, b) => a.time - b.time))
+        });// ^ stuff needs to be stored in JSON in chrome storage
+    };
 
     // on NEW video event
     const newVideoLoaded = async() => {
@@ -61,24 +59,24 @@
         }
     };
 
-    // Simple workaround with the button issue
-    //newVideoLoaded();
+    // when the background.js sends a message
+    chrome.runtime.onMessage.addListener((obj, sender, response) => {
+        const { type, value, videoId } = obj;
+        // these ^^^^ are all chrome features
+        if (type === "NEW") { // when new video loaded
+            currentVideo = videoId;
+            newVideoLoaded(); // handle actions with new video
+        } else if (type === "PLAY"){
+            youtubePlayer.currentTime = value; // this is where we jump to timestamp
+        } else if ( type === "DELETE") {
+            currentVideoBookmarks = currentVideoBookmarks.filter((b) => b.time != value);
+            chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) });
+            response(currentVideoBookmarks);
+        } else if ( type === "GENERATE") {
+            // TBD
+        }
 
-    // on bookmark btn click event
-    const addNewBookmarkEventHandler = async () => {
-        const currentTime = youtubePlayer.currentTime; // grabs timestamp
-        // console.log(currentTime);
-        const newBookmark = {
-            time: currentTime,
-            desc: "Note at " + getTime(currentTime), // this is where we generate the note
-        };
-
-        currentVideoBookmarks = await fetchBookmarks();
-        // store a new bookmark sorted by time
-        chrome.storage.sync.set({
-            [currentVideo]: JSON.stringify([...currentVideoBookmarks, newBookmark].sort((a, b) => a.time - b.time))
-        });// ^ stuff needs to be stored in JSON in chrome storage
-    }
+    });
 
     newVideoLoaded();
 })();
