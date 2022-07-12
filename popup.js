@@ -2,10 +2,11 @@ import { getCurrentTab } from "./utils.js";
 // adding a new bookmark row to the popup
 const addNewBookmark = (bookmarksElement, bm) => {
     const bmTitleElement = document.createElement("div");
-    const newbmElement = document.createElement("div");
+    const newbmElement = document.createElement("div"); // bookmark object
     const controlsElement = document.createElement("div")
+    const bmNoteElement = document.createElement("p")
 
-    bmTitleElement.textContent = bm.desc;
+    bmTitleElement.textContent = bm.desc; // note at <timestamp>
     bmTitleElement.className = "bookmark-title";
 
     controlsElement.className = 'bookmark-controls';
@@ -15,11 +16,17 @@ const addNewBookmark = (bookmarksElement, bm) => {
     newbmElement.className = "bookmark";
     newbmElement.setAttribute("timestamp", bm.time);
 
+    bmNoteElement.id = "note-" + bm.time;
+    bmNoteElement.setAttribute("contenteditable", true);
+    bmNoteElement.textContent = bm.note;
+
     editNoteEvents("play", onPlay, controlsElement);
     editNoteEvents("delete", onDelete, controlsElement);
+    editNoteEvents("edit",onEdit,controlsElement);
 
+    bmTitleElement.appendChild(bmNoteElement);
     newbmElement.appendChild(bmTitleElement);
-    newbmElement.appendChild(controlsElement); // add control button
+    newbmElement.appendChild(controlsElement);
     bookmarksElement.appendChild(newbmElement);
 };
 
@@ -46,8 +53,8 @@ const onPlay = async e => {
 
     chrome.tabs.sendMessage(activeTab.id, {
         type: "PLAY",
-        value: bookmarkTime
-    })
+        value: bookmarkTime,
+    });
 };
 // when delete
 const onDelete = async e => {
@@ -59,33 +66,42 @@ const onDelete = async e => {
 
     chrome.tabs.sendMessage(activeTab.id, {
         type: "DELETE",
-        value: bookmarkTime
-    })
+        value: bookmarkTime,
+    });
 };
-// when generate
-const onGenerate= async e => {
+// // when generate
+// const onGenerate= async e => {
+//     const activeTab = await getCurrentTab();
+//     const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+//     const bookmarkElementToDel = document.getElementById("bookmark-" + bookmarkTime);
+//
+//     bookmarkElementToDel.parentNode.removeChild(bookmarkElementToDel);
+//
+//     chrome.tabs.sendMessage(activeTab.id, {
+//         type: "GENERATE",
+//         val;ue: bookmarkTime
+//     })
+// };
+
+const onEdit = async e => {
     const activeTab = await getCurrentTab();
     const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
-    const bookmarkElementToDel = document.getElementById("bookmark-" + bookmarkTime);
-
-    bookmarkElementToDel.parentNode.removeChild(bookmarkElementToDel);
+    const newNoteContent = document.getElementById("note-" + bookmarkTime).innerText;
 
     chrome.tabs.sendMessage(activeTab.id, {
-        type: "GENERATE",
-        value: bookmarkTime
-    })
-};
+        type: "EDIT",
+        value: [bookmarkTime, newNoteContent],
+    });
+}
 
 const editNoteEvents =  (src, eventListener, controlParentElement) => {
     // src = play/ edit/ del
     const controlElement = document.createElement("img");
 
-    controlElement.src = "assets/" + src + ".png"
+    controlElement.src = "assets/" + src + ".png";
     controlElement.title = src;
     controlElement.addEventListener("click", eventListener);
     controlParentElement.appendChild(controlElement);
-
-
 };
 
 document.addEventListener("DOMContentLoaded", async () => {

@@ -33,7 +33,7 @@
         "24": "assets/ext-icon.png",
         "32": "assets/ext-icon.png"
       },
-      "default_title": "Tube Tube",
+      "default_title": "Tele Tube",
       "default_popup": "popup.html"  // the UI
     },
     "manifest_version": 3

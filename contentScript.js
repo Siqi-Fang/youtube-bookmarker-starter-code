@@ -5,15 +5,15 @@
 
     const fetchBookmarks = () => {
         return new Promise((resolve) => {
-        chrome.storage.sync.get([currentVideo], (obj) => {
-            resolve(obj[currentVideo] ? JSON.parse(obj[currentVideo]) : []);
+            chrome.storage.sync.get([currentVideo], (obj) => {
+                resolve(obj[currentVideo] ? JSON.parse(obj[currentVideo]) : []);
+          });
         });
-        });
-    };
-    // when the background.js sends a message
+      };
+    // when the popup.js or background.js sends a message
     chrome.runtime.onMessage.addListener((obj, sender, response) => {
         const { type, value, videoId } = obj;
-        // these ^^^^ are all chrome features
+
         if (type === "NEW") { // when new video loaded
             currentVideo = videoId;
             newVideoLoaded(); // handle actions with new video
@@ -25,6 +25,14 @@
             response(currentVideoBookmarks);
         } else if ( type === "GENERATE") {
             // TBD
+        }
+        else if (type === "EDIT"){
+            // onEdit()
+            // updates note content
+            const idx = currentVideoBookmarks.findIndex((bm) => bm.time == value[0]);
+            currentVideoBookmarks[idx].note = value[1];
+            chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) });
+            response(currentVideoBookmarks);
         }
     });
 
@@ -53,11 +61,11 @@
             youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
             youtubePlayer = document.getElementsByClassName("video-stream")[0];
 
-            // add tge bookmarkBtn to the control
+            // add the bookmarkBtn to the control
             youtubeLeftControls.appendChild(bookmarkBtn);
             bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
             youtubeLeftControls.appendChild(generateBtn);
-            generateBtn.addEventListener("click", addNewBookmarkEventHandler);
+            generateBtn.addEventListener("click", addNewBookmarkEventHandler); // prob New method for this
         }
     };
 
@@ -66,11 +74,13 @@
 
     // on bookmark btn click event
     const addNewBookmarkEventHandler = async () => {
+        alert("Add successful");
         const currentTime = youtubePlayer.currentTime; // grabs timestamp
-        // console.log(currentTime);
+
         const newBookmark = {
             time: currentTime,
             desc: "Note at " + getTime(currentTime), // this is where we generate the note
+            note: "Enter note here...",
         };
 
         currentVideoBookmarks = await fetchBookmarks();
@@ -90,3 +100,4 @@ const getTime = t => {
 
   return date.toISOString().substr(11, 8);
 };
+
