@@ -75,7 +75,7 @@ const onDelete = async e => {
 const onEdit = async e => {
     const activeTab = await getCurrentTab();
     const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
-    const newNoteContent = document.getElementById("note-" + bookmarkTime).innerText;
+    const newNoteContent = document.getElementById("note-" + bookmarkTime).textContent;
 
     chrome.tabs.sendMessage(activeTab.id, {
         type: "EDIT",
