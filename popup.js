@@ -6,6 +6,7 @@ const addNewBookmark = (bookmarksElement, bm) => {
     const controlsElement = document.createElement("div")
     const bmNoteElement = document.createElement("p")
 
+
     bmTitleElement.textContent = bm.desc; // note at <timestamp>
     bmTitleElement.className = "bookmark-title";
 
@@ -18,6 +19,7 @@ const addNewBookmark = (bookmarksElement, bm) => {
 
     bmNoteElement.id = "note-" + bm.time;
     bmNoteElement.setAttribute("contenteditable", true);
+    bmNoteElement.setAttribute("style","width:220px;min-height:35px");
     bmNoteElement.textContent = bm.note;
 
     editNoteEvents("play", onPlay, controlsElement);
@@ -69,19 +71,6 @@ const onDelete = async e => {
         value: bookmarkTime,
     });
 };
-// // when generate
-// const onGenerate= async e => {
-//     const activeTab = await getCurrentTab();
-//     const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
-//     const bookmarkElementToDel = document.getElementById("bookmark-" + bookmarkTime);
-//
-//     bookmarkElementToDel.parentNode.removeChild(bookmarkElementToDel);
-//
-//     chrome.tabs.sendMessage(activeTab.id, {
-//         type: "GENERATE",
-//         val;ue: bookmarkTime
-//     })
-// };
 
 const onEdit = async e => {
     const activeTab = await getCurrentTab();
@@ -92,7 +81,7 @@ const onEdit = async e => {
         type: "EDIT",
         value: [bookmarkTime, newNoteContent],
     });
-}
+};
 
 const editNoteEvents =  (src, eventListener, controlParentElement) => {
     // src = play/ edit/ del
@@ -117,7 +106,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (activeTab.url.includes("youtube.com/watch") && currentVideo){
         chrome.storage.sync.get([currentVideo], (data) => { //NOTE:  this is ternary operator in js
             const currentVideoBookmarks = data[currentVideo] ? JSON.parse(data[currentVideo]):[];
-
             viewBookmarks(currentVideoBookmarks);
         });
     } else { // otherwise show message
