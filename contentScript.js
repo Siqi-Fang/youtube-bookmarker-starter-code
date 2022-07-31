@@ -33,37 +33,31 @@
     // when the bo button is clicked
     const generateNotesEventHandler = async () => {
         alert("Summaries generated!");
-        // there is going to be something that grabs the result from the backend
-        // which should be a list of JSON {time: seconds or just timestamp "mm:ss:ss"
-                                        // , summary:"string"}
-        // we load that list to summaries
-        // this one is hardcoded for https://www.youtube.com/watch?v=GvQwE2OhL8I&t=128s&ab_channel=LearnCode.academy
-        const summaries = [{time:95, summary:"Hidden layers is the black box, and there are several parameters you can tune. "},
-                        {time:211, summary:"A real example neural network."},
-                        {time:377, summary:"The activation function because we are usually working with non-linear problems."},
-                        {time:490, summary:"During backpropagation we calculated error and adjust the weights and biases"},
-                        {time:640, summary:"We train a neural network by going through iterations of input data until our estimations are good."}
-        ];
+        // T0D0: GET TRANSCRIPT
+        //  maybe pass video id to backend and let backend grabs transcript
+        // GET SUMMARY AND WRITE TO STORAGE
+        chrome.runtime.sendMessage({contentScriptQuery: "getSummary"}, async (response) => {
+            // note: there might be a way to alter a variable within a async function but
+            // for now i'll just put all code in here
+            summaries = response.data; // list of dict
+            let bmSummarized = [];
 
-        let bmSummarized = [];
+            // create a new bm for each summary
+            for (let i = 0; i < summaries.length; i++){
+                const s = summaries[i];
+                let bm = {time:s['time'],
+                            desc:"Note at " + getTime(s['time']),
+                            note:s['summary']};
+                bmSummarized.push(bm);}
 
-        // create a new bm for each summary
-        for (let i = 0; i < summaries.length; i++){
-            const s = summaries[i];
-            let bm = {time:s['time'],
-                        desc:"Note at " + getTime(s['time']),
-                        note:s['summary']};
-            bmSummarized.push(bm);
-            }
+            currentVideoBookmarks = bmSummarized;// update bookmarks for storage update
+            // V1: Wiping out all existing notes
+            chrome.storage.sync.set({
+                [currentVideo]: JSON.stringify(currentVideoBookmarks.sort((a, b) => a.time - b.time))
+                });
+            });
 
-        currentVideoBookmarks = bmSummarized;
-        // set new bookmarks for storage update
-        // V1: Wiping out all
-        chrome.storage.sync.set({
-            [currentVideo]: JSON.stringify(currentVideoBookmarks.sort((a, b) => a.time - b.time))
-        });
     };
-
 
     // on NEW video event
     const newVideoLoaded = async() => {

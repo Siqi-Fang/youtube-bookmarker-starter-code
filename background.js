@@ -9,4 +9,18 @@ chrome.tabs.onUpdated.addListener((tabId, tab) => {
       });
     }
   });
-  
+
+
+// can only connect to external servers in background.js for security reason
+// SEE https://www.chromium.org/Home/chromium-security/extension-content-script-fetches/
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.contentScriptQuery == "getSummary") {
+        const url = 'http://127.0.0.1:5000/response';
+        fetch(url).then(response => response.json())
+        .then(response => {
+            sendResponse({data:response});
+        });
+        return true; // add this line to async.
+    }
+});
+

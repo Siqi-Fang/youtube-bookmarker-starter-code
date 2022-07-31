@@ -3,7 +3,8 @@
     "version": "0.1.0",
     "description": "Take AI-Powered Notes",
     "permissions": ["storage", "tabs"], // these are two chrome apis, store stuff & identify browser tab
-    "host_permissions": ["https://*.youtube.com/*"], // need to add to this if we add more platforms
+    "host_permissions": ["https://*.youtube.com/*",
+      "http://127.0.0.1:5000/*"], // this one is the backend
     "background": {
       "service_worker": "background.js" // when reloading the extension, chrome will scan this file
     },
@@ -28,8 +29,8 @@
       }
     ],
     "action": {
-      "default_icon": {
-        "16": "assets/ext-icon.png", // these are icons shown on the tool bar
+      "default_icon": {// these are icons shown on the tool bar
+        "16": "assets/ext-icon.png",
         "24": "assets/ext-icon.png",
         "32": "assets/ext-icon.png"
       },
