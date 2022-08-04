@@ -32,7 +32,7 @@
 
     // when the bo button is clicked
     const generateNotesEventHandler = async () => {
-        alert("Summaries generated!");
+        alert("Generation Request sent! Note that due to computing resource limit, this might take a few minute");
         // GET SUMMARY AND WRITE TO STORAGE
         chrome.runtime.sendMessage({contentScriptQuery: "getSummary", video_id: currentVideo}, async (response) => {
             // note: there might be a way to alter a variable within a async function but
