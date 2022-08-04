@@ -1,6 +1,6 @@
 (() => {
     let youtubeLeftControls, youtubePlayer; // access player & control
-    let currentVideo = "";
+    let currentVideo = ""; // Vid id str
     let currentVideoBookmarks = [];
 
     const fetchBookmarks = () => {
@@ -33,10 +33,8 @@
     // when the bo button is clicked
     const generateNotesEventHandler = async () => {
         alert("Summaries generated!");
-        // T0D0: GET TRANSCRIPT
-        //  maybe pass video id to backend and let backend grabs transcript
         // GET SUMMARY AND WRITE TO STORAGE
-        chrome.runtime.sendMessage({contentScriptQuery: "getSummary"}, async (response) => {
+        chrome.runtime.sendMessage({contentScriptQuery: "getSummary", video_id: currentVideo}, async (response) => {
             // note: there might be a way to alter a variable within a async function but
             // for now i'll just put all code in here
             summaries = response.data; // list of dict

@@ -15,12 +15,20 @@ chrome.tabs.onUpdated.addListener((tabId, tab) => {
 // SEE https://www.chromium.org/Home/chromium-security/extension-content-script-fetches/
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.contentScriptQuery == "getSummary") {
+
         const url = 'http://127.0.0.1:5000/response';
-        fetch(url).then(response => response.json())
+        let video_id = request.video_id; //this is gonna be a string
+        let data = {'data': video_id};
+        const init = {
+            "method": "POST",
+            "headers": {"Content-Type": "application/json"},
+            "body": JSON.stringify(data), //this is data
+            // FLASK side : request.get_json[key]
+        }; // POST Method object
+        fetch(url, init).then(response => response.json())
         .then(response => {
-            sendResponse({data:response});
-        });
-        return true; // add this line to async.
+            sendResponse({data:response});});
+        return true; // add this line to make the listener async.
     }
 });
 
